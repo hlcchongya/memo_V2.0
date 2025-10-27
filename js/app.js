@@ -60,12 +60,12 @@ class LocalMemoApp {
    */
   initComponents() {
     // ✅ 修正：使用正确的选择器获取 DOM 元素
-    const memoListContainer = document.querySelector('#memo-list');
-    const memoEditorContainer = document.querySelector('#memo-editor-modal'); // ✅ 修改这里
+    const memoListContainer = document.querySelector('#memo-list-container'); // ✅ 修改这里
+    const memoEditorContainer = document.querySelector('#memo-editor-modal');
     
     // 检查元素是否存在
     if (!memoListContainer) {
-      throw new Error('未找到 #memo-list 元素');
+      throw new Error('未找到 #memo-list-container 元素');
     }
     if (!memoEditorContainer) {
       throw new Error('未找到 #memo-editor-modal 元素');
@@ -79,7 +79,7 @@ class LocalMemoApp {
       (id) => this.handleToggleComplete(id)
     );
 
-    // ✅ 修正：传入正确的 DOM 元素
+    // 初始化编辑器组件
     this.editor = new MemoEditor(
       memoEditorContainer,
       (data) => this.handleSave(data),
