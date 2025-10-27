@@ -64,7 +64,7 @@ class MemoEditor {
     this.resetForm();
     this.container.querySelector('.editor-title').textContent = '新建备忘录';
     this.container.querySelector('#completed-group').style.display = 'none';
-    this.container.style.display = 'block';
+        this.container.style.display = 'block';
     this.container.querySelector('#memo-title').focus();
   }
 
@@ -76,7 +76,7 @@ class MemoEditor {
     this.isEditMode = true;
     this.currentMemo = memo;
     
-    // ✅ 先清空表单和标签
+    // ✅ 先清空表单和标签（不调用 resetForm 避免复选框被重置）
     this.container.querySelector('#memo-title').value = '';
     this.container.querySelector('#memo-content').value = '';
     this.container.querySelector('#memo-tags-container').innerHTML = '';
@@ -297,3 +297,4 @@ class MemoEditor {
     this.resetForm();
   }
 }
+
