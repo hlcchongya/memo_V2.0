@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="LocalMemo - 本地备忘录应用，完全在浏览器本地运行">
+  <meta name="keywords" content="备忘录,笔记,本地存储,LocalMemo">
+  <meta name="author" content="LocalMemo Team">
+  <title>LocalMemo - 本地备忘录</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+  
+  <!-- CSS 样式 -->
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/theme.css">
+</head>
+<body class="theme-light">
+  
+  <!-- 应用主体 -->
+  <div class="app-wrapper">
+    
+    <!-- 头部 -->
+    <header class="app-header">
+      <div class="container">
+        <div class="header-content">
+          <!-- 左侧：Logo和搜索 -->
+          <div class="header-left">
+            <div class="header-logo">
+              <span class="header-logo-icon">📝</span>
+              <span>LocalMemo</span>
+            </div>
+            
+            <!-- 搜索框 -->
+            <div class="search-box">
+              <span class="search-icon">🔍</span>
+              <input 
+                type="text" 
+                id="search-input" 
+                class="search-input" 
+                placeholder="搜索备忘录..."
+              />
+              <span class="search-clear" style="display: none;">✕</span>
+            </div>
+          </div>
+          
+          <!-- 右侧：操作按钮 -->
+          <div class="header-right">
+            <button class="btn btn-primary" id="new-memo-btn">
+              ➕ 新建备忘录
+            </button>
+            <button class="btn-icon btn-secondary" id="theme-toggle-btn" title="切换主题">
+              🌙
+            </button>
+            <button class="btn-icon btn-secondary" id="stats-btn" title="统计信息">
+              📊
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <!-- 主内容区 -->
+    <main class="app-main">
+      <div class="container">
+        <div class="main-content">
+          
+          <!-- 侧边栏 -->
+          <aside class="sidebar">
+            
+            <!-- 统计卡片 -->
+            <div class="sidebar-section">
+              <h3 class="sidebar-title">统计</h3>
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <div class="stat-label">总计</div>
+                  <div class="stat-value" id="stat-total">0</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">已完成</div>
+                  <div class="stat-value" id="stat-completed">0</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">待完成</div>
+                  <div class="stat-value" id="stat-pending">0</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">完成率</div>
+                  <div class="stat-value" id="stat-completion-rate">0%</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 分类筛选 -->
+            <div class="sidebar-section">
+              <h3 class="sidebar-title">分类</h3>
+              <div class="category-buttons">
+                <button class="category-btn active" data-category="全部">全部</button>
+                <button class="category-btn" data-category="工作">工作</button>
+                <button class="category-btn" data-category="生活">生活</button>
+                <button class="category-btn" data-category="学习">学习</button>
+                <button class="category-btn" data-category="其他">其他</button>
+              </div>
+            </div>
+            
+            <!-- 状态筛选 -->
+            <div class="sidebar-section">
+              <h3 class="sidebar-title">状态</h3>
+              <div class="status-buttons">
+                <button class="status-btn active" data-status="all">全部</button>
+                <button class="status-btn" data-status="pending">待完成</button>
+                <button class="status-btn" data-status="completed">已完成</button>
+              </div>
+            </div>
+            
+            <!-- 优先级筛选 -->
+            <div class="sidebar-section">
+              <h3 class="sidebar-title">优先级</h3>
+              <select id="priority-filter" class="form-select">
+                <option value="全部">全部</option>
+                <option value="高">高</option>
+                <option value="中">中</option>
+                <option value="低">低</option>
+              </select>
+            </div>
+            
+            <!-- 数据管理 -->
+            <div class="sidebar-section">
+              <h3 class="sidebar-title">数据管理</h3>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button class="btn btn-secondary btn-sm" id="export-btn">
+                  💾 导出数据
+                </button>
+                <button class="btn btn-secondary btn-sm" id="import-btn">
+                  📥 导入数据
+                </button>
+                <input 
+                  type="file" 
+                  id="import-input" 
+                  accept=".json" 
+                  style="display: none;"
+                />
+                <button class="btn btn-danger btn-sm" id="clear-completed-btn">
+                  🗑️ 清空已完成
+                </button>
+              </div>
+            </div>
+            
+          </aside>
+          
+          <!-- 主区域 -->
+          <div class="main-area">
+            
+            <!-- 工具栏 -->
+            <div class="toolbar">
+              <div class="toolbar-left">
+                <span style="font-size: 14px; color: #666;">
+                  共 <strong id="memo-count">0</strong> 条备忘录
+                </span>
+              </div>
+              
+              <div class="toolbar-right">
+                <label style="font-size: 14px; color: #666; display: flex; align-items: center; gap: 8px;">
+                  排序：
+                  <select id="sort-select" class="form-select" style="width: auto; padding: 6px 30px 6px 10px;">
+                    <option value="updatedAt-desc">更新时间（降序）</option>
+                    <option value="updatedAt-asc">更新时间（升序）</option>
+                    <option value="createdAt-desc">创建时间（降序）</option>
+                    <option value="createdAt-asc">创建时间（升序）</option>
+                    <option value="priority-desc">优先级（高到低）</option>
+                    <option value="priority-asc">优先级（低到高）</option>
+                    <option value="title-asc">标题（A-Z）</option>
+                    <option value="title-desc">标题（Z-A）</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+            
+            <!-- 备忘录列表 -->
+            <div class="list-area">
+              <div id="memo-list-container"></div>
+            </div>
+            
+          </div>
+          
+        </div>
+      </div>
+    </main>
+    
+  </div>
+  
+  <!-- 备忘录编辑器（模态框） -->
+  <div id="memo-editor-container"></div>
+  
+  <!-- JavaScript 文件 -->
+  <!-- 工具函数 -->
+  <script src="js/utils/dateUtil.js"></script>
+  <script src="js/utils/validator.js"></script>
+  
+  <!-- 数据模型 -->
+  <script src="js/models/memo.js"></script>
+  
+  <!-- 存储管理 -->
+  <script src="js/storage/storageManager.js"></script>
+  
+  <!-- 业务逻辑 -->
+  <script src="js/services/memoService.js"></script>
+  
+  <!-- UI组件 -->
+  <script src="js/ui/modal.js"></script>
+  <script src="js/ui/memoList.js"></script>
+  <script src="js/ui/memoEditor.js"></script>
+  
+  <!-- 应用主入口 -->
+  <script src="js/app.js"></script>
+  
+</body>
+</html>
