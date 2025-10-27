@@ -237,7 +237,7 @@ class MemoEditor {
     this.container.querySelector('#memo-content').value = '';
     this.container.querySelector('#memo-category').value = '其他';
     this.container.querySelector('#memo-priority').value = '中';
-    this.container.querySelector('#memo-completed').checked = false;
+    this.container.querySelector('#memo-completed').checked = false; // ✅ 确保重置
     this.container.querySelector('#memo-tags-container').innerHTML = '';
     this.clearErrors();
     this.updateCharCount();
@@ -304,7 +304,10 @@ class MemoEditor {
       category: this.container.querySelector('#memo-category').value,
       priority: this.container.querySelector('#memo-priority').value,
       tags: this.getTags(),
-      isCompleted: this.container.querySelector('#memo-completed').checked
+      // ✅ 新建模式强制为 false
+      isCompleted: this.isEditMode 
+        ? this.container.querySelector('#memo-completed').checked 
+        : false
     };
   }
 
